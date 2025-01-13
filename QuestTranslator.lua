@@ -1,11 +1,11 @@
-﻿-- Addon: QuestTranslator (version: 4.01) for Vanilla Wow (classic 1.12.1) 2025.01.13
+﻿-- Addon: QuestTranslator (version: 4.01) for Vanilla Wow (classic 1.12.1) 2015.02.12
 -- Description: AddOn displays translated quest information in original or separete window.
 -- Autor: Platine  (e-mail: platine.wow@gmail.com)
 -- Based on addon "QuestJapanizer" v.0.5.8 by lalha
 
 
 -- Global Variables
-local QTR_version = "4.1";
+local QTR_version = "4.01";
 local QTR_name = UnitName("player");
 local QTR_class= UnitClass("player");
 local QTR_race = UnitRace("player");
@@ -153,13 +153,6 @@ function QuestTranslator_OnEvent1()
 
   if (event == "ADDON_LOADED") then
      QuestTranslator_CheckVars();
-     if QuestData_hu and GossipData_hu then
-      QTR_QuestData = QuestData_hu.QTR_QuestData or {};
-      GS_Gossip = GossipData_hu.GS_Gossip or {};
-      DEFAULT_CHAT_FRAME:AddMessage("|cffffff00Hungarian quest and gossip data loaded successfully!");
-      else
-      DEFAULT_CHAT_FRAME:AddMessage("|cffff0000Failed to load Hungarian quest and gossip data.");
-      end
      --QuestTranslator_BlizzardOptions();
      if (DEFAULT_CHAT_FRAME) then
          DEFAULT_CHAT_FRAME:AddMessage("|cffffff00QuestTranslator ver. "..QTR_version.." "..QTR_lang.." - " .. QuestTranslator_Messages.loaded);
@@ -213,24 +206,8 @@ function DetectEmuServer()
 --  end
 end
 
-function QuestTranslator_HandleGossipEvent()
-   local numOptions = GetNumGossipOptions();
-   for i = 1, numOptions do
-       local text, gossipType = GetGossipOptions(i);
-       local hash = GenerateGossipHash(text); -- Assume this function hashes the gossip text
-       if GS_Gossip[hash] then
-           text = GS_Gossip[hash];
-       end
-       -- Update UI with translated gossip text
-       SetGossipOption(i, text, gossipType);
-   end
-end
-
 
 function QuestTranslator_OnEvent3()
-   if event == "GOSSIP_SHOW" then
-      QuestTranslator_HandleGossipEvent();
-   end
 
   if (event == "QUEST_GREETING") then
     if (QTR_PS["active"]=="1" and QTR_PS["mode"]=="1") then
@@ -519,27 +496,17 @@ end
 
 
 function QuestTranslator_UpdateQuestInfo()
-   if (QTR_PS["active"] == "0") then
-      return;
+  if (QTR_PS["active"]=="0") then
+     return;
   end
-
   local questSelected = GetQuestLogSelection();
-  local questTitle, _, _, _, _, _, _, questID = GetQuestLogTitle(questSelected);
-  if not questTitle or isHeader then
-      return;
+  if (GetQuestLogTitle(questSelected) == nil) then
+     return;
   end
-
-  -- Search in Hungarian QuestData
-  local questData = QTR_QuestData[tostring(questID)];
-  if questData then
-      QuestTranslator_QuestTitle:SetText(questData.Title);
-      QuestTranslator_QuestDetail:SetText(questData.Description);
-      QuestTranslator_QuestObjectives:SetText(questData.Objectives);
-  else
-      QuestTranslator_QuestTitle:SetText(questTitle);
-      QuestTranslator_QuestDetail:SetText(QuestTranslator_Messages.missing);
+  local questTitle = GetQuestLogTitle(questSelected);
+  if (isHeader) then
+     return;
   end
-end
 
   local qid = QuestTranslator_SearchIDforName(questTitle);
   local str_id = tostring(qid);
