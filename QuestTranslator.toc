@@ -10,7 +10,8 @@
 ## LoadOnDemand: 0
 ## SavedVariables: QTR_PS, QTR_SAVED
 ## SavedVariablesPerCharacter: QTR_PC
-QuestData_it.lua
 QuestList.lua
+QuestData_hu.lua
 QuestTranslator.lua
 QuestTranslatorFrames.xml
+
